@@ -9,12 +9,12 @@
 <html>
 	<head>
     	<meta http-equiv="Content-Type" content="text/html; charset=windows-1256">
-		<title>Login Page</title>
+		<title>Login Page Hexaware</title>
 	</head>
     
-	<body bgcolor='#263670'>
+	<body bgcolor='#FFFFFF'>
 		<div align="center">
-			<img src="img/Capture_old.PNG">
+			<img src="img/Capture_new.PNG">
 		</div> 
 	</body>
 </html>
