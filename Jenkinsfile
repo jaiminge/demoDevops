@@ -1,23 +1,27 @@
-Docker-Deploy-Prod
+Pipeline DockerPipeLine
+
+node ('build-agent') {
+   stage('Fetch Code') {
+       git 'https://github.com/jaiminge/demoDevops.git'
+   }
+   stage('Building') {
+       mvnHome = tool 'mvn'
+       sh 'mvn clean package'
+   }
+   stage('Archiving') {
+       echo 'Now Archiving...'
+       archiveArtifacts artifacts: '**/target/*.war'
+   }
+   stage('Transfer War') {
+       sh 'scp -i /Users/jaimegutierrez/Desktop/bashTestFiles/weblogicKey.pem /home/ec2-user/demoDevops/hexaware-master/target/*.war ubuntu@ec2-18-217-28-103.us-east-2.compute.amazonaws.com:/home/ubuntu'
+   }
+}
 
 node('docker-agent') {
-   stage('Stop All Containers') {
-       sh 'sudo docker stop $(sudo docker ps -a -q)'
-   }
-   
-   stage('Remove Old Containers') {
-       sh 'sudo docker rm $(sudo docker ps -a -q)'
-   }
-   
- /*  stage('Revemo Old Images') {
-       sh "sudo docker rmi $(sudo docker images|grep ubuntu/war-artifact|sed 's/\s\+/ /g'|cut -d' ' -f3)"
-   }*/
-   
-   stage('Building New Volume') {
-       sh 'sudo docker build -t ubuntu/war-artifact:1.0 . -f Dockerfile'
-       sh 'rm demo-1.0.war'
-   }
-   stage('Start Deploy') {
-        sh 'sudo docker-compose up -d'
+   stage('Deploy on Prod') {
+        timeout(time:1, unit:'DAYS'){
+            input message: 'Approve Production Deployment?'
+        }
+       build job: 'Docker-Deploy-Prod'
    }
 }
